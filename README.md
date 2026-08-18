@@ -11,7 +11,7 @@ and humanities research on published literature.
 | `/code-corpus` | Thematic coding across a body of literature — build or apply a codebook, produce an evidence table, surface where sources disagree |
 | `/draft-review` | Reads a draft against the sources it cites and pushes back on unsupported claims, thin evidence, and citations that don't check out |
 | `/slr-screen` | Audits a systematic review corpus — reconciles stage counts, finds unscreened items, catches tag variants that split your data, produces PRISMA numbers |
-| `/extract` | Pulls structured data from a corpus into a CSV evidence table — design, sample, country, findings — from full texts where they exist and abstracts otherwise, recording which |
+| `/extract` | Framework-based extraction into a CSV evidence table using **TCCM** (theory, context, characteristics, methodology) and **CIMO** (context, intervention, mechanism, outcome) — from full texts where they exist and abstracts otherwise, recording which |
 
 These chain together:
 
@@ -22,6 +22,14 @@ Zotero PDFs → /highlights → excerpts → /code-corpus → themes → /draft-
 ```
 
 ## Install
+
+If `/plugin` isn't available in your Claude Code environment, install the skills
+directly instead:
+
+```bash
+./sync-local.sh
+```
+
 
 ```bash
 git clone https://github.com/lacasavita144-jpg/research-toolkit.git
@@ -62,6 +70,24 @@ python3 plugins/research-kit/lib/zotero.py annotations --format md
 python3 plugins/research-kit/lib/zotero.py screening
 python3 plugins/research-kit/lib/zotero.py queue --tag "SLR corpus"
 ```
+
+## Extraction frameworks
+
+`/extract` codes against two framework schemas, tagged per field in
+`plugins/research-kit/skills/extract/schema.json`:
+
+- **TCCM** — Theory, Context, Characteristics, Methodology.
+  [Paul & Rosado-Serrano (2019)](https://doi.org/10.1108/IMR-10-2018-0280).
+  Characterises the literature and surfaces gaps. Applies to nearly any study.
+- **CIMO** — Context, Intervention, Mechanism, Outcome.
+  [Denyer, Tranfield & van Aken (2008)](https://doi.org/10.1177/0170840607088020).
+  Builds design propositions. Presupposes an actual intervention, so it does not
+  apply to perception or attitude studies — a `cimo_applicable` gate field marks
+  those, and the proportion that fail the gate is itself a finding.
+
+The mechanism field is treated as inferred rather than extracted, is restricted
+to full-text sources, and flags its rows for review. A table where every row has
+a confident mechanism is a table where mechanisms were invented.
 
 ## Full text vs abstracts
 

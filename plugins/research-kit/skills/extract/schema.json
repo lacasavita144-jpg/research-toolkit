@@ -1,23 +1,51 @@
 {
-  "_comment": "Extraction fields for this review. Edit freely — add, remove, or rename. 'requires' declares the minimum text needed: fields marked 'full-text' are left blank for abstract-only sources rather than guessed at.",
+  "_comment": "Framework-based extraction. Edit freely. 'requires' declares the minimum text needed — fields marked full-text stay blank for abstract-only sources rather than being guessed at. 'inferred: true' marks fields the reviewer constructs rather than reads off the page.",
   "review": "AI and generative AI in management, business, and accounting education",
+  "frameworks": {
+    "TCCM": {
+      "elements": ["Theory", "Context", "Characteristics", "Methodology"],
+      "citation": "Paul, J. & Rosado-Serrano, A. (2019). International Marketing Review, 36(6), 830-858.",
+      "purpose": "Characterises a body of literature and surfaces gaps. Applies to essentially any study, empirical or not."
+    },
+    "CIMO": {
+      "elements": ["Context", "Intervention", "Mechanisms", "Outcomes"],
+      "citation": "Denyer, D., Tranfield, D. & van Aken, J.E. (2008). Organization Studies, 29(3), 393-413.",
+      "purpose": "Builds design propositions of the form: in context C, intervention I invokes mechanism M to deliver outcome O. Presupposes that something was actually done — it does not fit perception or attitude studies with no intervention."
+    }
+  },
   "fields": [
     {
-      "name": "country",
-      "prompt": "Country or countries where the study was conducted. 'Multiple' if comparative, 'Not stated' if absent.",
-      "type": "text",
-      "requires": "abstract"
+      "name": "theory_named",
+      "framework": "TCCM", "element": "Theory",
+      "prompt": "Theoretical frameworks the paper explicitly names (TAM, UTAUT, TPB, constructivism, self-determination theory, etc.). 'None stated' is a legitimate and common answer — never infer a framework the paper does not name.",
+      "type": "text", "requires": "abstract"
     },
     {
-      "name": "discipline",
-      "prompt": "Disciplinary context of the education studied.",
+      "name": "theory_role",
+      "framework": "TCCM", "element": "Theory",
+      "prompt": "How theory is used: testing an existing theory, extending one, building new theory, framing only (cited but not operationalised), or none.",
+      "type": "categorical",
+      "options": ["testing", "extending", "building", "framing only", "none"],
+      "requires": "full-text"
+    },
+    {
+      "name": "context_country",
+      "framework": "TCCM+CIMO", "element": "Context",
+      "prompt": "Country or countries of the study. 'Multiple' if comparative, 'Not stated' if absent.",
+      "type": "text", "requires": "abstract"
+    },
+    {
+      "name": "context_discipline",
+      "framework": "TCCM+CIMO", "element": "Context",
+      "prompt": "Disciplinary setting of the education studied.",
       "type": "categorical",
       "options": ["management", "business (general)", "accounting", "finance",
                   "marketing", "economics", "higher education (general)", "other"],
       "requires": "abstract"
     },
     {
-      "name": "education_level",
+      "name": "context_level",
+      "framework": "TCCM+CIMO", "element": "Context",
       "prompt": "Level of the learners studied.",
       "type": "categorical",
       "options": ["undergraduate", "postgraduate", "executive/professional",
@@ -25,7 +53,28 @@
       "requires": "abstract"
     },
     {
-      "name": "study_design",
+      "name": "context_setting",
+      "framework": "TCCM+CIMO", "element": "Context",
+      "prompt": "Delivery setting: face-to-face, online, blended, or not stated.",
+      "type": "categorical",
+      "options": ["face-to-face", "online", "blended", "not stated"],
+      "requires": "abstract"
+    },
+    {
+      "name": "characteristics_constructs",
+      "framework": "TCCM", "element": "Characteristics",
+      "prompt": "The key variables or constructs the study examines (e.g. perceived usefulness, academic integrity, learning performance, self-efficacy). List them as the paper names them.",
+      "type": "text", "requires": "abstract"
+    },
+    {
+      "name": "characteristics_relationships",
+      "framework": "TCCM", "element": "Characteristics",
+      "prompt": "Relationships the study proposes or tests between those constructs, including direction (e.g. 'perceived ease of use -> intention to adopt', 'AI use -> reduced critical thinking'). Note mediators and moderators where present.",
+      "type": "text", "requires": "full-text"
+    },
+    {
+      "name": "method_design",
+      "framework": "TCCM", "element": "Methodology",
       "prompt": "Research design. Conceptual pieces and reviews are not empirical — label them as such rather than forcing an empirical category.",
       "type": "categorical",
       "options": ["quantitative - survey", "quantitative - experiment",
@@ -35,57 +84,54 @@
       "requires": "abstract"
     },
     {
-      "name": "sample_type",
-      "prompt": "Who or what was studied.",
+      "name": "method_sample",
+      "framework": "TCCM", "element": "Methodology",
+      "prompt": "Who or what was studied, and how many. Give the number in digits where stated.",
+      "type": "text", "requires": "abstract"
+    },
+    {
+      "name": "method_analysis",
+      "framework": "TCCM", "element": "Methodology",
+      "prompt": "Analytical technique (SEM, PLS-SEM, thematic analysis, ANOVA, regression, content analysis, etc.).",
+      "type": "text", "requires": "full-text"
+    },
+    {
+      "name": "cimo_applicable",
+      "framework": "CIMO", "element": "gate",
+      "prompt": "Does this study examine an actual intervention — something introduced, deployed, or trialled? Answer 'no' for perception, attitude, and opinion studies where AI was merely asked about, and for conceptual pieces. When 'no', leave the remaining CIMO fields blank; that pattern is itself a finding about the literature.",
       "type": "categorical",
-      "options": ["students", "faculty", "students and faculty", "curricula/documents",
-                  "AI outputs", "not applicable", "not stated"],
+      "options": ["yes", "no", "unclear"],
       "requires": "abstract"
     },
     {
-      "name": "sample_size",
-      "prompt": "Number of participants or units analysed. Digits only, or 'Not stated'.",
-      "type": "number",
-      "requires": "abstract"
+      "name": "cimo_intervention",
+      "framework": "CIMO", "element": "Intervention",
+      "prompt": "What was actually introduced or done: the AI system, how it was deployed, by whom, and over what period. Be specific — 'ChatGPT-4 used for formative feedback on weekly essays over one semester' rather than 'ChatGPT used'.",
+      "type": "text", "requires": "abstract"
     },
     {
-      "name": "ai_tool",
-      "prompt": "The specific AI system studied. Name it if named (ChatGPT, GPT-4, Copilot, Gemini); use 'generative AI (unspecified)' when the paper stays generic.",
-      "type": "text",
-      "requires": "abstract"
+      "name": "cimo_mechanism",
+      "framework": "CIMO", "element": "Mechanisms",
+      "prompt": "The generative mechanism — why the intervention produces the outcome. Papers rarely state this outright; it is usually reasoned from the discussion section. Record the paper's own explanation where it gives one, and mark the row for review where you are reasoning beyond what is written.",
+      "type": "text", "requires": "full-text", "inferred": true
     },
     {
-      "name": "application_area",
-      "prompt": "What the AI was used for in the educational setting.",
-      "type": "categorical",
-      "options": ["assessment/grading", "teaching delivery", "curriculum design",
-                  "student learning support", "academic integrity", "research training",
-                  "administration", "attitudes/perceptions only", "other"],
-      "requires": "abstract"
-    },
-    {
-      "name": "theory_used",
-      "prompt": "Named theoretical framework (TAM, UTAUT, constructivism, etc.). 'None stated' is a common and legitimate answer — do not infer a framework the paper does not name.",
-      "type": "text",
-      "requires": "full-text"
-    },
-    {
-      "name": "outcomes_measured",
-      "prompt": "What outcomes or variables were measured or observed.",
-      "type": "text",
-      "requires": "abstract"
+      "name": "cimo_outcome",
+      "framework": "CIMO", "element": "Outcomes",
+      "prompt": "Effects reported, including direction and whether they were intended. Record null and negative results as carefully as positive ones — those are the findings most often lost in synthesis.",
+      "type": "text", "requires": "abstract"
     },
     {
       "name": "key_findings",
-      "prompt": "The paper's main finding in one or two sentences, in its own terms. Not your assessment of it.",
-      "type": "text",
-      "requires": "abstract"
+      "framework": "-", "element": "-",
+      "prompt": "The paper's headline finding in one or two sentences, in its own terms. Not your assessment of it.",
+      "type": "text", "requires": "abstract"
     },
     {
       "name": "limitations_stated",
+      "framework": "-", "element": "-",
       "prompt": "Limitations the authors themselves acknowledge. Only what they state — not limitations you observe.",
-      "type": "text",
-      "requires": "full-text"
+      "type": "text", "requires": "full-text"
     }
   ]
 }
