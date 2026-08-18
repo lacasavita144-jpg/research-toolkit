@@ -11,7 +11,7 @@ and humanities research on published literature.
 | `/code-corpus` | Thematic coding across a body of literature — build or apply a codebook, produce an evidence table, surface where sources disagree |
 | `/draft-review` | Reads a draft against the sources it cites and pushes back on unsupported claims, thin evidence, and citations that don't check out |
 | `/slr-screen` | Audits a systematic review corpus — reconciles stage counts, finds unscreened items, catches tag variants that split your data, produces PRISMA numbers |
-| `/extract` | Framework-based extraction into a CSV evidence table using **TCCM** (theory, context, characteristics, methodology) and **CIMO** (context, intervention, mechanism, outcome) — from full texts where they exist and abstracts otherwise, recording which |
+| `/extract` | Extracts **TCCM** and **CIMO** data into a CSV evidence table — from full texts where they exist and abstracts otherwise, recording which |
 
 These chain together:
 
@@ -73,21 +73,21 @@ python3 plugins/research-kit/lib/zotero.py queue --tag "SLR corpus"
 
 ## Extraction frameworks
 
-`/extract` codes against two framework schemas, tagged per field in
-`plugins/research-kit/skills/extract/schema.json`:
+`/extract` collects seven fields, one per framework element:
 
-- **TCCM** — Theory, Context, Characteristics, Methodology.
-  [Paul & Rosado-Serrano (2019)](https://doi.org/10.1108/IMR-10-2018-0280).
-  Characterises the literature and surfaces gaps. Applies to nearly any study.
-- **CIMO** — Context, Intervention, Mechanism, Outcome.
-  [Denyer, Tranfield & van Aken (2008)](https://doi.org/10.1177/0170840607088020).
-  Builds design propositions. Presupposes an actual intervention, so it does not
-  apply to perception or attitude studies — a `cimo_applicable` gate field marks
-  those, and the proportion that fail the gate is itself a finding.
+| | |
+|---|---|
+| **TCCM** | Theory · Context · Characteristics · Methodology |
+| **CIMO** | Context · Intervention · Mechanism · Outcome |
 
-The mechanism field is treated as inferred rather than extracted, is restricted
-to full-text sources, and flags its rows for review. A table where every row has
-a confident mechanism is a table where mechanisms were invented.
+Sources: [Paul & Rosado-Serrano (2019)](https://doi.org/10.1108/IMR-10-2018-0280),
+[Denyer, Tranfield & van Aken (2008)](https://doi.org/10.1177/0170840607088020).
+
+Edit `plugins/research-kit/skills/extract/schema.json` to match your protocol.
+
+Mechanism needs full text and is left blank otherwise — it is the element most
+often fabricated in reviews. Papers with no intervention are recorded as such
+rather than forced into CIMO shape.
 
 ## Full text vs abstracts
 
