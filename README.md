@@ -23,7 +23,7 @@ Zotero PDFs → /highlights → excerpts → /code-corpus → themes → /draft-
 ## Install
 
 ```bash
-git clone https://github.com/lacasavita144/research-toolkit.git
+git clone https://github.com/lacasavita144-jpg/research-toolkit.git
 ```
 
 Then in Claude Code, from the directory containing the clone:
@@ -36,7 +36,7 @@ Then in Claude Code, from the directory containing the clone:
 Once it's on GitHub you can skip the clone and add it directly:
 
 ```
-/plugin marketplace add lacasavita144/research-toolkit
+/plugin marketplace add lacasavita144-jpg/research-toolkit
 ```
 
 ## Requirements
