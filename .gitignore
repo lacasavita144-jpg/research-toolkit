@@ -1,0 +1,14 @@
+# Never commit library data or drafts
+*.sqlite
+*.sqlite-journal
+*.bak
+notes/
+drafts/
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.venv/

@@ -1,0 +1,13 @@
+{
+  "name": "research-toolkit",
+  "owner": {
+    "name": "La Casa Vita"
+  },
+  "plugins": [
+    {
+      "name": "research-kit",
+      "source": "./plugins/research-kit",
+      "description": "Zotero-aware research tooling: search your library, write structured reading notes, and check citations in a draft."
+    }
+  ]
+}

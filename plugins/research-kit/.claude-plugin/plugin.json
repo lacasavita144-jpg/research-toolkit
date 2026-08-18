@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "research-kit",
+  "displayName": "Research Kit",
+  "version": "0.1.0",
+  "description": "Zotero-aware research tooling for social sciences and humanities.",
+  "author": {
+    "name": "La Casa Vita"
+  },
+  "license": "MIT",
+  "keywords": [
+    "research",
+    "zotero",
+    "citations",
+    "literature-review",
+    "humanities"
+  ],
+  "repository": "https://github.com/lacasavita144/research-toolkit"
+}
