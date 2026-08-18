@@ -11,6 +11,7 @@ and humanities research on published literature.
 | `/code-corpus` | Thematic coding across a body of literature — build or apply a codebook, produce an evidence table, surface where sources disagree |
 | `/draft-review` | Reads a draft against the sources it cites and pushes back on unsupported claims, thin evidence, and citations that don't check out |
 | `/slr-screen` | Audits a systematic review corpus — reconciles stage counts, finds unscreened items, catches tag variants that split your data, produces PRISMA numbers |
+| `/extract` | Pulls structured data from a corpus into a CSV evidence table — design, sample, country, findings — from full texts where they exist and abstracts otherwise, recording which |
 
 These chain together:
 
@@ -59,7 +60,18 @@ python3 plugins/research-kit/lib/zotero.py stats
 python3 plugins/research-kit/lib/zotero.py collections
 python3 plugins/research-kit/lib/zotero.py annotations --format md
 python3 plugins/research-kit/lib/zotero.py screening
+python3 plugins/research-kit/lib/zotero.py queue --tag "SLR corpus"
 ```
+
+## Full text vs abstracts
+
+`/extract` reads full text from Zotero's own PDF text index (`.zotero-ft-cache`),
+so no PDF library is needed. Items without an attached PDF fall back to their
+abstract, and every extracted row records which basis it came from. Fields marked
+`requires: full-text` in `skills/extract/schema.json` are left blank rather than
+guessed at for abstract-only sources.
+
+Edit that schema to match your own review's protocol.
 
 ## A note on counts
 

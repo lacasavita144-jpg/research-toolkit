@@ -453,17 +453,105 @@ def screening_report(conn, corpus_tag=None):
 
 
 
+# --------------------------------------------------------------- extraction --
+
+FT_CACHE = ".zotero-ft-cache"
+
+
+def storage_dir(data_dir=DATA_DIR):
+    return os.path.join(data_dir, "storage")
+
+
+def item_text(conn, item_ids, data_dir=DATA_DIR, max_chars=None):
+    """Metadata plus whatever text exists: full text where Zotero has indexed a
+    PDF, abstract otherwise. The `basis` field records which, because an
+    extraction made from an abstract cannot be reported as one made from the
+    full text."""
+    if not item_ids:
+        return []
+    fields = load_fields(conn, item_ids)
+    creators = load_creators(conn, item_ids)
+    tags = load_tags(conn, item_ids)
+
+    marks = ",".join("?" * len(item_ids))
+    attach = {}
+    for r in conn.execute(
+        "SELECT att.parentItemID pid, it.key akey, att.path FROM itemAttachments att "
+        "JOIN items it ON it.itemID = att.itemID "
+        "LEFT JOIN deletedItems d ON d.itemID = att.itemID "
+        "WHERE d.itemID IS NULL AND att.contentType = 'application/pdf' "
+        "AND att.parentItemID IN (%s)" % marks, item_ids):
+        attach.setdefault(r["pid"], r["akey"])
+
+    keys = {}
+    for r in conn.execute(
+            "SELECT itemID, key FROM items WHERE itemID IN (%s)" % marks, item_ids):
+        keys[r["itemID"]] = r["key"]
+
+    out = []
+    for i in item_ids:
+        f = fields.get(i, {})
+        abstract = (f.get("abstractNote") or "").strip()
+        fulltext = ""
+        akey = attach.get(i)
+        if akey:
+            cache = os.path.join(storage_dir(data_dir), akey, FT_CACHE)
+            if os.path.exists(cache):
+                try:
+                    with open(cache, "r", errors="replace") as fh:
+                        fulltext = fh.read().strip()
+                except OSError:
+                    fulltext = ""
+        if max_chars and fulltext:
+            fulltext = fulltext[:max_chars]
+
+        out.append({
+            "key": keys.get(i),
+            "cite": cite({"authors": [c["name"] for c in creators.get(i, [])
+                                      if c["role"] == "author"],
+                          "date": f.get("date")}),
+            "title": f.get("title"),
+            "authors": [c["name"] for c in creators.get(i, []) if c["role"] == "author"],
+            "date": f.get("date"),
+            "venue": f.get("publicationTitle") or f.get("bookTitle") or f.get("publisher"),
+            "doi": f.get("DOI"),
+            "tags": sorted(tags.get(i, [])),
+            "basis": "full-text" if fulltext else ("abstract" if abstract else "none"),
+            "abstract": abstract,
+            "fulltext": fulltext,
+            "fulltext_chars": len(fulltext),
+        })
+    out.sort(key=lambda d: d["cite"])
+    return out
+
+
+def extract_queue(conn, item_ids, data_dir=DATA_DIR):
+    """Inventory only: what each item offers, without hauling the text along."""
+    rows = item_text(conn, item_ids, data_dir)
+    for r in rows:
+        r.pop("abstract", None)
+        r.pop("fulltext", None)
+    summary = {"total": len(rows)}
+    for r in rows:
+        summary[r["basis"]] = summary.get(r["basis"], 0) + 1
+    return {"summary": summary, "items": rows}
+
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("command",
-                   choices=["sources", "annotations", "collections", "tags", "stats", "screening"])
+                   choices=["sources", "annotations", "collections", "tags", "stats", "screening",
+                            "text", "queue"])
     p.add_argument("--collection")
     p.add_argument("--tag")
     p.add_argument("--search")
     p.add_argument("--key")
     p.add_argument("--color")
     p.add_argument("--limit", type=int)
+    p.add_argument("--max-chars", type=int,
+                   help="truncate full text per item (default: no limit)")
     p.add_argument("--format", choices=["json", "md"], default="json")
     p.add_argument("--data-dir", default=DATA_DIR)
     args = p.parse_args()
@@ -520,6 +608,17 @@ def main():
             key_to_id[r["key"]] = r["itemID"]
     for s in sources:
         s["_id"] = key_to_id.get(s["key"])
+
+    if args.command == "queue":
+        print(json.dumps(extract_queue(conn, ids, args.data_dir), indent=2))
+        return
+
+    if args.command == "text":
+        rows = item_text(conn, ids, args.data_dir, args.max_chars)
+        if args.limit:
+            rows = rows[:args.limit]
+        print(json.dumps(rows, indent=2))
+        return
 
     if args.command == "sources":
         if args.limit:

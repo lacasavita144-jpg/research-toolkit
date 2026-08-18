@@ -1,0 +1,91 @@
+{
+  "_comment": "Extraction fields for this review. Edit freely — add, remove, or rename. 'requires' declares the minimum text needed: fields marked 'full-text' are left blank for abstract-only sources rather than guessed at.",
+  "review": "AI and generative AI in management, business, and accounting education",
+  "fields": [
+    {
+      "name": "country",
+      "prompt": "Country or countries where the study was conducted. 'Multiple' if comparative, 'Not stated' if absent.",
+      "type": "text",
+      "requires": "abstract"
+    },
+    {
+      "name": "discipline",
+      "prompt": "Disciplinary context of the education studied.",
+      "type": "categorical",
+      "options": ["management", "business (general)", "accounting", "finance",
+                  "marketing", "economics", "higher education (general)", "other"],
+      "requires": "abstract"
+    },
+    {
+      "name": "education_level",
+      "prompt": "Level of the learners studied.",
+      "type": "categorical",
+      "options": ["undergraduate", "postgraduate", "executive/professional",
+                  "mixed", "faculty (not students)", "not stated"],
+      "requires": "abstract"
+    },
+    {
+      "name": "study_design",
+      "prompt": "Research design. Conceptual pieces and reviews are not empirical — label them as such rather than forcing an empirical category.",
+      "type": "categorical",
+      "options": ["quantitative - survey", "quantitative - experiment",
+                  "qualitative - interviews", "qualitative - case study",
+                  "mixed methods", "conceptual/theoretical", "literature review",
+                  "design/development", "not stated"],
+      "requires": "abstract"
+    },
+    {
+      "name": "sample_type",
+      "prompt": "Who or what was studied.",
+      "type": "categorical",
+      "options": ["students", "faculty", "students and faculty", "curricula/documents",
+                  "AI outputs", "not applicable", "not stated"],
+      "requires": "abstract"
+    },
+    {
+      "name": "sample_size",
+      "prompt": "Number of participants or units analysed. Digits only, or 'Not stated'.",
+      "type": "number",
+      "requires": "abstract"
+    },
+    {
+      "name": "ai_tool",
+      "prompt": "The specific AI system studied. Name it if named (ChatGPT, GPT-4, Copilot, Gemini); use 'generative AI (unspecified)' when the paper stays generic.",
+      "type": "text",
+      "requires": "abstract"
+    },
+    {
+      "name": "application_area",
+      "prompt": "What the AI was used for in the educational setting.",
+      "type": "categorical",
+      "options": ["assessment/grading", "teaching delivery", "curriculum design",
+                  "student learning support", "academic integrity", "research training",
+                  "administration", "attitudes/perceptions only", "other"],
+      "requires": "abstract"
+    },
+    {
+      "name": "theory_used",
+      "prompt": "Named theoretical framework (TAM, UTAUT, constructivism, etc.). 'None stated' is a common and legitimate answer — do not infer a framework the paper does not name.",
+      "type": "text",
+      "requires": "full-text"
+    },
+    {
+      "name": "outcomes_measured",
+      "prompt": "What outcomes or variables were measured or observed.",
+      "type": "text",
+      "requires": "abstract"
+    },
+    {
+      "name": "key_findings",
+      "prompt": "The paper's main finding in one or two sentences, in its own terms. Not your assessment of it.",
+      "type": "text",
+      "requires": "abstract"
+    },
+    {
+      "name": "limitations_stated",
+      "prompt": "Limitations the authors themselves acknowledge. Only what they state — not limitations you observe.",
+      "type": "text",
+      "requires": "full-text"
+    }
+  ]
+}
